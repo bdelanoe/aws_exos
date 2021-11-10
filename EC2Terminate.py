@@ -1,24 +1,10 @@
-import boto3,os
+import boto3
 
-ec2 = boto3.client('ec2')
+ec2 = boto3.resource('ec2')
 
-numTerminatedInstances = 0
-files = os.listdir("instances")
+ids = open('instanceIds.txt', 'r').readlines()
 
-for f in files:
-    inst = open("instances/"+f, "r")
-    instanceID = inst.read()
-    inst.close()
+for i in ids:
+    ec2.Instance(i.strip()).terminate()
 
-    response = ec2.terminate_instances(
-        InstanceIds=[
-            instanceID,
-        ]
-    )
-
-    os.remove("instances/" + f)
-    numTerminatedInstances += 1
-    print("Instance '%s' terminée" % instanceID)
-
-print("%d instances 'ec2' ont été terminées" % numTerminatedInstances)
 
